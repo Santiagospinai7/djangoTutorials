@@ -2,6 +2,7 @@ from django.shortcuts import render # here by default
 from django.http import HttpResponse # new
 from django.views.generic import TemplateView # new
 from django.views import View
+from django.shortcuts import redirect
 
 class HomePageView(TemplateView):
   template_name = 'pages/home.html'
@@ -59,11 +60,20 @@ class ProductShowView(View):
 
 
     def get(self, request, id):
-        viewData = {}
-        product = Product.products[int(id)-1]
-        viewData["title"] = product["name"] + " - Online Store"
-        viewData["subtitle"] =  product["name"] + " - Product information"
-        viewData["product"] = product
-        viewData["price"] =  product["price"]
+      viewData = {}
+    
+      try:
+          product_id = int(id)
+          product = next((p for p in Product.products if int(p['id']) == product_id), None)
 
-        return render(request, self.template_name, viewData)
+          if product is None:
+              return redirect("home")  # Redirect to the home page if product is not found
+          
+          viewData["title"] = product["name"] + " - Online Store"
+          viewData["subtitle"] = product["name"] + " - Product information"
+          viewData["product"] = product
+          viewData["price"] = product["price"]
+
+          return render(request, self.template_name, viewData)
+      except ValueError:
+          return redirect("home")
