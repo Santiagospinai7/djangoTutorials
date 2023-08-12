@@ -2,7 +2,8 @@ from django.shortcuts import render # here by default
 from django.http import HttpResponse # new
 from django.views.generic import TemplateView # new
 from django.views import View
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
+from django import forms
 
 class HomePageView(TemplateView):
   template_name = 'pages/home.html'
@@ -77,3 +78,31 @@ class ProductShowView(View):
           return render(request, self.template_name, viewData)
       except ValueError:
           return redirect("home")
+      
+class ProductForm(forms.Form):
+    name = forms.CharField(required=True)
+    price = forms.FloatField(required=True)
+
+class ProductCreateView(View):
+
+    template_name = 'products/create.html'
+
+    def get(self, request):
+        form = ProductForm()
+        viewData = {}
+        viewData["title"] = "Create product"
+        viewData["form"] = form
+        return render(request, self.template_name, viewData)
+
+    def post(self, request):
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            
+            return redirect(form) 
+        else:
+            viewData = {}
+            viewData["title"] = "Create product"
+            viewData["form"] = form
+            return render(request, self.template_name, viewData)
+        
+
