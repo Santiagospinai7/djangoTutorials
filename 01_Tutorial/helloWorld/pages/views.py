@@ -38,71 +38,78 @@ class ContactPageView(TemplateView):
     return context
 
 class Product:
-    products = [
-        {"id":"1", "name":"TV", "description":"Best TV", "price": 500},
-        {"id":"2", "name":"iPhone", "description":"Best iPhone", "price": 1000},
-        {"id":"3", "name":"Chromecast", "description":"Best Chromecast", "price": 50},
-        {"id":"4", "name":"Glasses", "description":"Best Glasses", "price": 100},
-    ]
+  products = [
+      {"id":"1", "name":"TV", "description":"Best TV", "price": 500},
+      {"id":"2", "name":"iPhone", "description":"Best iPhone", "price": 1000},
+      {"id":"3", "name":"Chromecast", "description":"Best Chromecast", "price": 50},
+      {"id":"4", "name":"Glasses", "description":"Best Glasses", "price": 100},
+  ]
 
 class ProductIndexView(View):
-    template_name = 'products/index.html'
+  template_name = 'products/index.html'
 
-    def get(self, request):
-        viewData = {}
-        viewData["title"] = "Products - Online Store"
-        viewData["subtitle"] =  "List of products"
-        viewData["products"] = Product.products
+  def get(self, request):
+      viewData = {}
+      viewData["title"] = "Products - Online Store"
+      viewData["subtitle"] =  "List of products"
+      viewData["products"] = Product.products
 
-        return render(request, self.template_name, viewData)
+      return render(request, self.template_name, viewData)
 
 class ProductShowView(View):
-    template_name = 'products/show.html'
+  template_name = 'products/show.html'
 
 
-    def get(self, request, id):
-      viewData = {}
-    
-      try:
-          product_id = int(id)
-          product = next((p for p in Product.products if int(p['id']) == product_id), None)
+  def get(self, request, id):
+    viewData = {}
+  
+    try:
+        product_id = int(id)
+        product = next((p for p in Product.products if int(p['id']) == product_id), None)
 
-          if product is None:
-              return redirect("home")  # Redirect to the home page if product is not found
-          
-          viewData["title"] = product["name"] + " - Online Store"
-          viewData["subtitle"] = product["name"] + " - Product information"
-          viewData["product"] = product
-          viewData["price"] = product["price"]
+        if product is None:
+            return redirect("home")  # Redirect to the home page if product is not found
+        
+        viewData["title"] = product["name"] + " - Online Store"
+        viewData["subtitle"] = product["name"] + " - Product information"
+        viewData["product"] = product
+        viewData["price"] = product["price"]
 
-          return render(request, self.template_name, viewData)
-      except ValueError:
-          return redirect("home")
+        return render(request, self.template_name, viewData)
+    except ValueError:
+        return redirect("home")
       
 class ProductForm(forms.Form):
-    name = forms.CharField(required=True)
-    price = forms.FloatField(required=True)
+  name = forms.CharField(required=True)
+  price = forms.FloatField(required=True)
+
+  def clean_price(self):
+    price = self.cleaned_data['price']
+    if price <= 0:
+        raise forms.ValidationError("The price must be greater than 0")
+    return price
+  
 
 class ProductCreateView(View):
 
-    template_name = 'products/create.html'
+  template_name = 'products/create.html'
 
-    def get(self, request):
-        form = ProductForm()
-        viewData = {}
-        viewData["title"] = "Create product"
-        viewData["form"] = form
-        return render(request, self.template_name, viewData)
+  def get(self, request):
+      form = ProductForm()
+      viewData = {}
+      viewData["title"] = "Create product"
+      viewData["form"] = form
+      return render(request, self.template_name, viewData)
 
-    def post(self, request):
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            
-            return redirect(form) 
-        else:
-            viewData = {}
-            viewData["title"] = "Create product"
-            viewData["form"] = form
-            return render(request, self.template_name, viewData)
-        
+  def post(self, request):
+      form = ProductForm(request.POST)
+      if form.is_valid():
+          
+          return redirect(form) 
+      else:
+          viewData = {}
+          viewData["title"] = "Create product"
+          viewData["form"] = form
+          return render(request, self.template_name, viewData)
+      
 
