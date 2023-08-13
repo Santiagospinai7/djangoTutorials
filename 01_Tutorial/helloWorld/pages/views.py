@@ -4,6 +4,7 @@ from django.views.generic import TemplateView # new
 from django.views import View
 from django.shortcuts import render, redirect
 from django import forms
+from django.urls import reverse
 
 class HomePageView(TemplateView):
   template_name = 'pages/home.html'
@@ -104,8 +105,10 @@ class ProductCreateView(View):
   def post(self, request):
       form = ProductForm(request.POST)
       if form.is_valid():
-          
-          return redirect(form) 
+          success_message = "Product created"
+          form = ProductForm()  
+          viewData = {"title": "Create product", "form": form, "success_message": success_message}
+          return render(request, self.template_name, viewData)
       else:
           viewData = {}
           viewData["title"] = "Create product"
