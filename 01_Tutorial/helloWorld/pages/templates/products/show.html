@@ -18,6 +18,11 @@
         {% else %}
             <p class="card-text">{{product.price}}</p>
         {% endif %}
+        {# Create a button to add a comment #}
+        <a href="{% url 'add_comment' product.id %}" class="btn btn-primary">Add comment</a>
+        {% for comment in product.comment_set.all %}
+        - {{ comment.description }}<br />
+        {% endfor %}  
       </div>
     </div>
   </div>

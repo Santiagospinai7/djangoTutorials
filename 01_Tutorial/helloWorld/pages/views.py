@@ -4,7 +4,7 @@ from django.views import View
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django import forms
-from .models import Product
+from .models import Product, Comment
 
 class HomePageView(TemplateView):
   template_name = 'pages/home.html'
@@ -83,29 +83,26 @@ class ProductForm(forms.ModelForm):
     return price
 
 class ProductCreateView(View):
-
   template_name = 'products/create.html'
 
   def get(self, request):
-      form = ProductForm()
+    form = ProductForm()
+    viewData = {}
+    viewData["title"] = "Create product"
+    viewData["form"] = form
+    return render(request, self.template_name, viewData)
+
+  def post(self, request):
+    form = ProductForm(request.POST)
+    if form.is_valid(): 
+      form.save()
+      viewData = {"title": "Create product", "form": form, "success_message": "Product created"}
+      return render(request, self.template_name, viewData)
+    else:
       viewData = {}
       viewData["title"] = "Create product"
       viewData["form"] = form
       return render(request, self.template_name, viewData)
-
-  def post(self, request):
-      form = ProductForm(request.POST)
-      if form.is_valid():
-          # form = ProductForm()  
-          product = form.save()
-          viewData = {"title": "Create product", "form": form, "success_message": "Product created"}
-          return render(request, self.template_name, viewData)
-          # return redirect('product_show', id=product.id)
-      else:
-          viewData = {}
-          viewData["title"] = "Create product"
-          viewData["form"] = form
-          return render(request, self.template_name, viewData)
       
 class ProductListView(ListView):
   model = Product
@@ -117,3 +114,32 @@ class ProductListView(ListView):
     context['title'] = 'Products - Online Store'
     context['subtitle'] = 'List of products'
     return context
+
+class CommentForm(forms.ModelForm):
+  class Meta:
+    model = Comment
+    fields = ['description']
+    
+  product = forms.ModelChoiceField(widget=forms.HiddenInput, queryset=Product.objects.all(), required=False)
+
+class CommentCreateView(View):
+  template_name = 'comments/create.html'
+
+  def get(self, request, id):
+    product_id = id  # Capture the product_id from URL parameter
+    form = CommentForm(initial={'product': product_id})  # Set the initial value for the product field
+    viewData = {"title": "Create comment", "form": form}
+    return render(request, self.template_name, viewData)
+
+  def post(self, request, id):
+    product_id = id  # Capture the product_id from URL parameter
+    form = CommentForm(request.POST)
+    if form.is_valid(): 
+        comment = form.save(commit=False)
+        comment.product_id = product_id  # Set the foreign key reference
+        comment.save()
+        viewData = {"title": "Create comment", "form": form, "success_message": "Comment created"}
+        return render(request, self.template_name, viewData)
+    else:
+        viewData = {"title": "Create comment", "form": form}
+        return render(request, self.template_name, viewData)
