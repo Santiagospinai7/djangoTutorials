@@ -70,18 +70,17 @@ class ProductShowView(View):
     viewData["product"] = product
 
     return render(request, self.template_name, viewData)
-
       
-class ProductForm(forms.Form):
-  name = forms.CharField(required=True)
-  price = forms.FloatField(required=True)
+class ProductForm(forms.ModelForm):
+  class Meta:
+    model = Product
+    fields = ['name', 'price']
 
   def clean_price(self):
     price = self.cleaned_data['price']
     if price <= 0:
         raise forms.ValidationError("The price must be greater than 0")
     return price
-  
 
 class ProductCreateView(View):
 
@@ -97,10 +96,11 @@ class ProductCreateView(View):
   def post(self, request):
       form = ProductForm(request.POST)
       if form.is_valid():
-          success_message = "Product created"
-          form = ProductForm()  
-          viewData = {"title": "Create product", "form": form, "success_message": success_message}
+          # form = ProductForm()  
+          product = form.save()
+          viewData = {"title": "Create product", "form": form, "success_message": "Product created"}
           return render(request, self.template_name, viewData)
+          # return redirect('product_show', id=product.id)
       else:
           viewData = {}
           viewData["title"] = "Create product"
