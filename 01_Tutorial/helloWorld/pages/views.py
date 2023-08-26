@@ -52,7 +52,6 @@ class ProductIndexView(View):
 class ProductShowView(View):
   template_name = 'products/show.html'
 
-
   def get(self, request, id):
     try:
         product_id = int(id)
@@ -120,26 +119,39 @@ class CommentForm(forms.ModelForm):
     model = Comment
     fields = ['description']
     
-  product = forms.ModelChoiceField(widget=forms.HiddenInput, queryset=Product.objects.all(), required=False)
+  # product = forms.ModelChoiceField(widget=forms.HiddenInput, queryset=Product.objects.all(), required=False)
 
 class CommentCreateView(View):
-  template_name = 'comments/create.html'
+    template_name = 'comments/create.html'
 
-  def get(self, request, id):
-    product_id = id  # Capture the product_id from URL parameter
-    form = CommentForm(initial={'product': product_id})  # Set the initial value for the product field
-    viewData = {"title": "Create comment", "form": form}
-    return render(request, self.template_name, viewData)
+    def get(self, request, id):
+        product_id = id  
+        form = CommentForm()
+        viewData = {
+            "title": "Create comment",
+            "form": form,
+            "product_id": product_id,  
+        }
+        return render(request, self.template_name, viewData)
 
-  def post(self, request, id):
-    product_id = id  # Capture the product_id from URL parameter
-    form = CommentForm(request.POST)
-    if form.is_valid(): 
-        comment = form.save(commit=False)
-        comment.product_id = product_id  # Set the foreign key reference
-        comment.save()
-        viewData = {"title": "Create comment", "form": form, "success_message": "Comment created"}
-        return render(request, self.template_name, viewData)
-    else:
-        viewData = {"title": "Create comment", "form": form}
-        return render(request, self.template_name, viewData)
+    def post(self, request, id):
+        product_id = id  
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.product_id = product_id  
+            comment.save()
+            viewData = {
+                "title": "Create comment",
+                "form": form,
+                "success_message": "Comment created",
+                "product_id": product_id,  
+            }
+            return render(request, self.template_name, viewData)
+        else:
+            viewData = {
+                "title": "Create comment",
+                "form": form,
+                "product_id": product_id,  # Pass the product ID to the template
+            }
+            return render(request, self.template_name, viewData)

@@ -18,10 +18,16 @@
                 </ul>
             {% endif %}
 
-            <form method="POST" action="{% url 'add_comment' %}">
+            {% comment %} <form action="{% url 'add_comment' product_id %}" method="POST">
               {% csrf_token %}
-              <input type="text" class="form-control mb-2" placeholder="Enter description" name="description" value="{{form.data.description }}" />
+              {{ form.as_p }}
               <input type="submit" class="btn btn-primary" value="Create" />
+            </form> {% endcomment %}
+
+            <form action="{% url 'add_comment' product_id %}" method="POST">
+              {% csrf_token %}
+              <input type="text" class="form-control mb-2" placeholder="Enter Description" name="description" value="{{form.data.description }}" />
+              <button type="submit" class="btn btn-danger">Add Comment</button>
             </form>
 
             {% if success_message %}
