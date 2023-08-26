@@ -18,9 +18,10 @@
         {% else %}
             <p class="card-text">{{product.price}}</p>
         {% endif %}
+        <h2>Comments</h2>
         <form action="{% url 'add_comment' product.id %}" method="POST">
           {% csrf_token %}
-          <button type="submit" class="btn btn-danger">Add Comment</button>
+          <button type="submit" class="btn btn-primary mb-5">Add Comment</button>
         </form>
         {% for comment in product.comment_set.all %}
         - {{ comment.description }}<br />
