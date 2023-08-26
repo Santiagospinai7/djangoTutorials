@@ -118,19 +118,18 @@ class CommentForm(forms.ModelForm):
   class Meta:
     model = Comment
     fields = ['description']
-    
-  # product = forms.ModelChoiceField(widget=forms.HiddenInput, queryset=Product.objects.all(), required=False)
 
 class CommentCreateView(View):
-    template_name = 'comments/create.html'
+    template_name = './comments/create.html'
 
     def get(self, request, id):
-        product_id = id  
-        form = CommentForm()
+        product_id = id
+        initial_data = {'description': ''}  # Initialize with default data
+        form = CommentForm(initial=initial_data)
         viewData = {
             "title": "Create comment",
             "form": form,
-            "product_id": product_id,  
+            "product_id": product_id,
         }
         return render(request, self.template_name, viewData)
 
@@ -147,7 +146,7 @@ class CommentCreateView(View):
                 "success_message": "Comment created",
                 "product_id": product_id,  
             }
-            return render(request, self.template_name, viewData)
+            return redirect('show', id=product_id)
         else:
             viewData = {
                 "title": "Create comment",
