@@ -1,0 +1,24 @@
+{% extends 'pages/base.html' %}
+{% block content %}
+
+<div class="card mb-3">
+  <div class="row g-0">
+    <div>
+      <div class="card-body">
+        <h5 class="card-title">Sign Up</h5>
+        <p class="card-text">
+          <form method="POST">
+          Creating a signup form 105
+          {% csrf_token %}
+          {{ form.as_p }}
+            <button type="submit"
+            class="btn btn-primary">
+            Sign Up
+            </button>
+          </form>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
