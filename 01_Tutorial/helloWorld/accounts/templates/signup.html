@@ -13,7 +13,6 @@
         {% endif %}
         <p class="card-text">
           <form method="POST">
-          Creating a signup form 105
           {% csrf_token %}
           {{ form.as_p }}
             <button type="submit"

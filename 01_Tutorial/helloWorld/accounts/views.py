@@ -3,17 +3,15 @@ from django.shortcuts import render
 # Create your views here.
 from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm
+from .forms import UserCreateForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.db import IntegrityError
 
 def signup(request):
-  return render(request, 'signup.html',{'form':UserCreationForm})
-
-def signup(request):
   if request.method == 'GET':
-    return render(request, 'signup.html', {'form':UserCreationForm})
+    return render(request, 'signup.html', {'form':UserCreateForm})
   else:
     if request.POST['password1'] == request.POST['password2']:
       try:
@@ -22,8 +20,8 @@ def signup(request):
         login(request, user)
         return redirect('home')
       except IntegrityError:
-        return render(request,'signup.html',{'form':UserCreationForm,'error':'Username already taken. Choose new username.'})
+        return render(request,'signup.html',{'form':UserCreateForm,'error':'Username already taken. Choose new username.'})
     else:
-      return render(request, 'signup.html', {'form':UserCreationForm, 'error':'Passwords do not match'})
+      return render(request, 'signup.html', {'form':UserCreateForm, 'error':'Passwords do not match'})
     
 
