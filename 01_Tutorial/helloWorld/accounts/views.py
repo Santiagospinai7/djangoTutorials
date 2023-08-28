@@ -10,7 +10,7 @@ from django.shortcuts import redirect
 from django.db import IntegrityError
 from django.contrib.auth.forms import AuthenticationForm
 
-def signup(request):
+def signupaccount(request):
   if request.method == 'GET':
     return render(request, 'signup.html', {'form':UserCreateForm})
   else:
@@ -25,11 +25,11 @@ def signup(request):
     else:
       return render(request, 'signup.html', {'form':UserCreateForm, 'error':'Passwords do not match'})
     
-def logout(request):
+def logoutaccount(request):
   logout(request)
   return redirect('home')
 
-def login(request):
+def loginaccount(request):
   if request.method == 'GET':
     return render(request, 'login.html',{'form':AuthenticationForm})
   else:
