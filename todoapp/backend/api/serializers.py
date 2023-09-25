@@ -8,3 +8,15 @@ class ToDoSerializer(serializers.ModelSerializer):
   class Meta:
     model = ToDo
     fields = ['id', 'title', 'memo', 'created', 'completed']
+
+class ToDoToggleCompleteSerializer(serializers.ModelSerializer):
+  completed = serializers.BooleanField()
+
+  class Meta:
+    model = ToDo
+    fields = ['completed']
+
+  def update(self, instance, validated_data):
+    instance.completed = validated_data['completed']
+    instance.save()
+    return instance
