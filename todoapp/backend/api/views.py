@@ -1,6 +1,6 @@
 
 # Create your views here.
-from rest_framework import generics
+from rest_framework import generics, permissions
 from .serializers import ToDoSerializer
 from todo.models import ToDo
 
@@ -9,6 +9,7 @@ class TodoListCreate(generics.ListCreateAPIView):
   # queryset.
   # We specify TodoSerializer which we have earlier implemented
   serializer_class = ToDoSerializer
+  permission_classes = [permissions.IsAuthenticated]
 
   def get_queryset(self):
     user = self.request.user
